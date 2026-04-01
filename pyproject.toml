@@ -1,0 +1,11 @@
+[project]
+name = "langclaw"
+version = "0.1.0"
+description = "LLM agent with subagent spawning built on LangGraph"
+readme = "README.md"
+
+dependencies = [
+    "langchain>=0.3.28",
+    "langgraph>=1.0.1",
+    "langchain-openai>=0.3",
+]
