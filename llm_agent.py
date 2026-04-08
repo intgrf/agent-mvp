@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from langchain_core.chat_models import BaseChatModel
 from langchain_core.messages import HumanMessage
 from langgraph.graph.state import CompiledStateGraph
 
 from nodes import AgentFactory
+from skill_registry import SkillsRegistry
 from tools.registry import ToolsRegistry
 from tools.message_to_user import message_to_user
+from tools.skill_tools import create_skill_tools
 from tools.spawn_subagent import create_spawn_subagent_tool
 from utils import extract_response
 
@@ -32,10 +36,18 @@ class LLMAgent:
         self,
         llm: BaseChatModel,
         registry: ToolsRegistry | None = None,
+        skills_registry: SkillsRegistry | None = None,
+        skills_dir: Path | None = None,
     ) -> None:
         self._llm = llm
         self.registry = registry or ToolsRegistry()
-        self.factory = AgentFactory(llm, self.registry)
+        if skills_registry is not None:
+            self.skills_registry = skills_registry
+        elif skills_dir is not None:
+            self.skills_registry = SkillsRegistry(skills_dir)
+        else:
+            self.skills_registry = SkillsRegistry()
+        self.factory = AgentFactory(llm, self.registry, self.skills_registry)
         self._graph: CompiledStateGraph | None = None
 
     def setup(self) -> LLMAgent:
@@ -45,6 +57,9 @@ class LLMAgent:
         ``self.registry`` so they are included in the compiled graph.
         """
         self.registry.register(message_to_user)
+
+        for tool in create_skill_tools(self.skills_registry):
+            self.registry.register(tool)
 
         spawn_tool = create_spawn_subagent_tool(self.factory)
         self.registry.register(spawn_tool)

@@ -11,6 +11,7 @@ from constants import NodeName, MESSAGE_TO_USER_TOOL_NAME, SUBAGENT_EXCLUDED_TOO
 from state import AgentState
 from context import PromptBuilder
 from prompts import MAIN_AGENT_SYSTEM_PROMPT, SUBAGENT_SYSTEM_PROMPT
+from skill_registry import SkillsRegistry
 from tools.registry import ToolsRegistry
 
 
@@ -25,9 +26,15 @@ class AgentFactory:
                    └─────────────┘      └────────┘  (other tools → loop back)
     """
 
-    def __init__(self, llm: BaseChatModel, registry: ToolsRegistry) -> None:
+    def __init__(
+        self,
+        llm: BaseChatModel,
+        registry: ToolsRegistry,
+        skills_registry: SkillsRegistry | None = None,
+    ) -> None:
         self._llm = llm
         self.registry = registry
+        self._skills_registry = skills_registry
 
     def create_main_agent(self) -> CompiledStateGraph:
         return self._build_graph(
@@ -53,7 +60,10 @@ class AgentFactory:
         system_prompt: str,
         tools: list[BaseTool],
     ) -> CompiledStateGraph:
-        prompt_builder = PromptBuilder(system_prompt)
+        prompt_builder = PromptBuilder(
+            system_prompt,
+            skills_registry=self._skills_registry,
+        )
         llm_with_tools = self._llm.bind_tools(tools)
 
         def llm_call_node(state: AgentState) -> dict:
