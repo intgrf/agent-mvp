@@ -126,6 +126,25 @@ input {
   overflow: hidden;
 }
 
+.app-frame {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.app-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
 .app-header,
 .main-stage,
 .settings-page {
@@ -144,50 +163,50 @@ input {
 
 .ambient {
   border-radius: 999px;
-  filter: blur(18px);
-  opacity: 0.65;
+  filter: blur(46px);
+  opacity: 0.48;
   mix-blend-mode: screen;
 }
 
 .ambient-a {
   top: -12%;
   left: -6%;
-  width: 34rem;
-  height: 34rem;
+  width: 46rem;
+  height: 46rem;
   background:
-    radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 70%, white), transparent 42%),
-    radial-gradient(circle at 65% 60%, rgba(126, 118, 255, 0.42), transparent 48%);
+    radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 58%, white), transparent 58%),
+    radial-gradient(circle at 65% 60%, rgba(126, 118, 255, 0.28), transparent 66%);
   animation: blob-drift-a 18s ease-in-out infinite alternate;
 }
 
 .ambient-b {
   top: 8%;
   right: -8%;
-  width: 28rem;
-  height: 28rem;
+  width: 40rem;
+  height: 40rem;
   background:
-    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--accent) 50%, #67c7ff), transparent 45%),
-    radial-gradient(circle at 30% 65%, rgba(255, 255, 255, 0.15), transparent 48%);
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--accent) 42%, #67c7ff), transparent 60%),
+    radial-gradient(circle at 30% 65%, rgba(255, 255, 255, 0.1), transparent 68%);
   animation: blob-drift-b 24s ease-in-out infinite alternate;
 }
 
 .ambient-c {
   bottom: -16%;
   left: 20%;
-  width: 30rem;
-  height: 30rem;
+  width: 44rem;
+  height: 44rem;
   background:
-    radial-gradient(circle at 40% 40%, color-mix(in srgb, var(--accent) 32%, #ff9ae0), transparent 44%),
-    radial-gradient(circle at 70% 70%, rgba(100, 255, 214, 0.2), transparent 48%);
+    radial-gradient(circle at 40% 40%, color-mix(in srgb, var(--accent) 26%, #ff9ae0), transparent 60%),
+    radial-gradient(circle at 70% 70%, rgba(100, 255, 214, 0.14), transparent 70%);
   animation: blob-drift-c 22s ease-in-out infinite alternate;
 }
 
 .ambient-d {
   bottom: 8%;
   right: 16%;
-  width: 22rem;
-  height: 22rem;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), transparent 55%);
+  width: 34rem;
+  height: 34rem;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08), transparent 72%);
   animation: blob-drift-d 20s ease-in-out infinite alternate;
 }
 
@@ -209,8 +228,7 @@ input {
 
 .app-header {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 18px;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -222,9 +240,9 @@ input {
 }
 
 .app-header-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, auto);
   align-items: flex-start;
-  justify-content: space-between;
   gap: 18px;
 }
 
@@ -262,6 +280,11 @@ input {
   justify-content: flex-end;
   gap: 12px;
   flex-wrap: wrap;
+  min-width: 0;
+}
+
+.header-side > * {
+  flex: 0 1 auto;
 }
 
 .status-pill,
@@ -335,6 +358,7 @@ input {
 .app-tabs {
   display: inline-flex;
   width: fit-content;
+  max-width: 100%;
   gap: 6px;
   padding: 6px;
   border-radius: 999px;
@@ -372,8 +396,7 @@ input {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 1040px;
-  margin: 0 auto;
+  margin: 0;
   gap: 18px;
   align-items: stretch;
 }
@@ -415,6 +438,13 @@ input {
   .main-stage.with-logs.layout-desktop .logs-panel {
     width: 400px;
   }
+}
+
+.chat-column {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
 }
 
 .phone-wrap {
@@ -835,6 +865,7 @@ input {
 .logs-panel {
   display: flex;
   flex-direction: column;
+  align-self: stretch;
   min-height: 0;
   overflow: hidden;
   border-radius: 28px;
@@ -1181,7 +1212,7 @@ input {
   }
 
   .app-header-row {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .header-side {
@@ -1193,6 +1224,10 @@ input {
   .token-pill {
     width: 100%;
     max-width: none;
+  }
+
+  .header-side > * {
+    flex: 1 1 100%;
   }
 
   .app-tabs {
@@ -1210,6 +1245,20 @@ input {
 
   .settings-page {
     padding-bottom: 20px;
+  }
+}
+
+@media (max-width: 899px) {
+  .app-frame {
+    gap: 14px;
+  }
+
+  .app-body {
+    display: block;
+  }
+
+  .chat-column {
+    display: block;
   }
 }
 

@@ -407,261 +407,267 @@ export default function App() {
       <div className="ambient ambient-d" aria-hidden />
       <div className="bg-mesh" aria-hidden />
       <div className="bg-noise" aria-hidden />
-      <header className="app-header">
-        <div className="app-header-row">
-          <div className="brand">
-            <span className="brand-kicker">AI workspace</span>
-            <span className="brand-title">Companion</span>
-            <span className="brand-sub">Чат, reasoning и логи в одном пространстве</span>
-          </div>
-          <div className="header-side">
-            <div className={`status-pill${chatConnected ? '' : ' off'}`}>
-              <span className={`status-dot${chatConnected ? '' : ' off'}`} />
-              <span>{chatConnected ? 'Подключено' : 'Нет соединения'}</span>
+      <div className="app-frame">
+        <header className="app-header">
+          <div className="app-header-row">
+            <div className="brand">
+              <span className="brand-kicker">AI workspace</span>
+              <span className="brand-title">Companion</span>
+              <span className="brand-sub">Чат, reasoning и логи в одном пространстве</span>
             </div>
-            {showTokens ? (
-              <div className="token-pill">
-                <span className="token-pill-label">LLM usage</span>
-                <div className="token-pill-value">{tokens.totalTokens.toLocaleString()}</div>
-                <div className="token-pill-meta">
-                  prompt {tokens.promptTokens} · completion {tokens.completionTokens}
-                </div>
-                <div className="token-pill-model">Модель: {tokens.modelName}</div>
+            <div className="header-side">
+              <div className={`status-pill${chatConnected ? '' : ' off'}`}>
+                <span className={`status-dot${chatConnected ? '' : ' off'}`} />
+                <span>{chatConnected ? 'Подключено' : 'Нет соединения'}</span>
               </div>
-            ) : null}
-          </div>
-        </div>
-        <nav className="app-tabs" role="tablist" aria-label="Разделы">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'chat'}
-            className={`app-tab${activeTab === 'chat' ? ' active' : ''}`}
-            onClick={() => setActiveTab('chat')}
-          >
-            Чат
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'settings'}
-            className={`app-tab${activeTab === 'settings' ? ' active' : ''}`}
-            onClick={() => setActiveTab('settings')}
-          >
-            Настройки
-          </button>
-        </nav>
-      </header>
-
-      {activeTab === 'chat' ? (
-        <div className={`main-stage${showLogs ? ' with-logs' : ''} layout-${chatLayout}`}>
-          <div className="phone-wrap">
-            <div className="ring-deco" aria-hidden />
-            <div className="ring-deco sm" aria-hidden />
-            <div className="phone">
-              <div className="phone-notch">
-                <span />
-              </div>
-              <div className="phone-header">
-                <h1>Диалог</h1>
-                <div className={`status-dot${chatConnected ? '' : ' off'}`} title={chatConnected ? 'online' : 'offline'} />
-              </div>
-
-              <div className="messages">
-                {messages.map((m) => (
-                  <div key={m.id} className={`bubble ${m.role}`}>
-                    {m.role === 'reasoning' ? (
-                      <>
-                        <div className="think-label">
-                          Reasoning
-                          <span className="think-shimmer" />
-                        </div>
-                        <div className="think-body">{m.body.slice(0, m.streamPos)}</div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="bubble-meta">{m.label}</div>
-                        {!m.done ? (
-                          <div className="stream-plain">{m.body.slice(0, m.streamPos)}</div>
-                        ) : (
-                          <MarkdownBody text={m.body} />
-                        )}
-                      </>
-                    )}
+              {showTokens ? (
+                <div className="token-pill">
+                  <span className="token-pill-label">LLM usage</span>
+                  <div className="token-pill-value">{tokens.totalTokens.toLocaleString()}</div>
+                  <div className="token-pill-meta">
+                    prompt {tokens.promptTokens} · completion {tokens.completionTokens}
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {suggestions.length > 0 ? (
-                <div className="suggest-strip">
-                  <h3>Спросить ещё</h3>
-                  <div className="suggest-scroll">
-                    {suggestions.map((s) => (
-                      <button key={s} type="button" className="suggest-chip" onClick={() => sendSuggest(s)}>
-                        {s}
-                      </button>
-                    ))}
-                  </div>
+                  <div className="token-pill-model">Модель: {tokens.modelName}</div>
                 </div>
               ) : null}
-
-              <div className="input-row">
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Сообщение…"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') send()
-                  }}
-                />
-                <button type="button" className="send-btn" disabled={!chatConnected} onClick={send} aria-label="Отправить">
-                  →
-                </button>
-              </div>
             </div>
           </div>
+          <nav className="app-tabs" role="tablist" aria-label="Разделы">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'chat'}
+              className={`app-tab${activeTab === 'chat' ? ' active' : ''}`}
+              onClick={() => setActiveTab('chat')}
+            >
+              Чат
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'settings'}
+              className={`app-tab${activeTab === 'settings' ? ' active' : ''}`}
+              onClick={() => setActiveTab('settings')}
+            >
+              Настройки
+            </button>
+          </nav>
+        </header>
 
-          {showLogs ? (
-            <aside className="logs-panel" aria-label="Логи приложения">
-              <div className="logs-panel-head">
-                <div className="logs-panel-copy">
-                  <span className="logs-panel-title">Логи</span>
-                  <span className="logs-panel-subtitle">Поток событий сервера</span>
+        <main className="app-body">
+          {activeTab === 'chat' ? (
+            <section className={`main-stage${showLogs ? ' with-logs' : ''} layout-${chatLayout}`}>
+              <div className="chat-column">
+                <div className="phone-wrap">
+                  <div className="ring-deco" aria-hidden />
+                  <div className="ring-deco sm" aria-hidden />
+                  <div className="phone">
+                    <div className="phone-notch">
+                      <span />
+                    </div>
+                    <div className="phone-header">
+                      <h1>Диалог</h1>
+                      <div className={`status-dot${chatConnected ? '' : ' off'}`} title={chatConnected ? 'online' : 'offline'} />
+                    </div>
+
+                    <div className="messages">
+                      {messages.map((m) => (
+                        <div key={m.id} className={`bubble ${m.role}`}>
+                          {m.role === 'reasoning' ? (
+                            <>
+                              <div className="think-label">
+                                Reasoning
+                                <span className="think-shimmer" />
+                              </div>
+                              <div className="think-body">{m.body.slice(0, m.streamPos)}</div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="bubble-meta">{m.label}</div>
+                              {!m.done ? (
+                                <div className="stream-plain">{m.body.slice(0, m.streamPos)}</div>
+                              ) : (
+                                <MarkdownBody text={m.body} />
+                              )}
+                            </>
+                          )}
+                        </div>
+                      ))}
+                      <div ref={messagesEndRef} />
+                    </div>
+
+                    {suggestions.length > 0 ? (
+                      <div className="suggest-strip">
+                        <h3>Спросить ещё</h3>
+                        <div className="suggest-scroll">
+                          {suggestions.map((s) => (
+                            <button key={s} type="button" className="suggest-chip" onClick={() => sendSuggest(s)}>
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    <div className="input-row">
+                      <input
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder="Сообщение…"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') send()
+                        }}
+                      />
+                      <button type="button" className="send-btn" disabled={!chatConnected} onClick={send} aria-label="Отправить">
+                        →
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <button type="button" className="logs-clear-btn" onClick={clearLogs}>
-                  Очистить
+              </div>
+
+              {showLogs ? (
+                <aside className="logs-panel" aria-label="Логи приложения">
+                  <div className="logs-panel-head">
+                    <div className="logs-panel-copy">
+                      <span className="logs-panel-title">Логи</span>
+                      <span className="logs-panel-subtitle">Поток событий сервера</span>
+                    </div>
+                    <button type="button" className="logs-clear-btn" onClick={clearLogs}>
+                      Очистить
+                    </button>
+                  </div>
+                  <div className="logs-panel-body">
+                    {logLines.length === 0 ? (
+                      <p className="logs-empty">Пока нет записей. Логи появятся здесь по мере работы сервера.</p>
+                    ) : (
+                      logLines.map((line) => (
+                        <pre key={line.id} className={`log-line${line.text.toLowerCase().includes('llm') ? ' llm' : ''}`}>
+                          {line.text}
+                        </pre>
+                      ))
+                    )}
+                    <div ref={logsEndRef} />
+                  </div>
+                </aside>
+              ) : null}
+            </section>
+          ) : (
+            <section className="settings-page">
+              <h2 className="settings-title">Настройки</h2>
+              <p className="settings-lead">Параметры сохраняются в этом браузере.</p>
+
+              <div className="setting-card setting-card-stack">
+                <div className="setting-text">
+                  <div className="setting-name">Цветовая гамма</div>
+                  <div className="setting-desc">Акцентные цвета, фон и подсветка интерфейса пересчитываются под выбранную тему.</div>
+                </div>
+                <div className="theme-grid" role="group" aria-label="Цветовая гамма">
+                  <button
+                    type="button"
+                    className={`theme-option${uiTheme === 'forest' ? ' active' : ''}`}
+                    aria-pressed={uiTheme === 'forest'}
+                    onClick={() => persistUiTheme('forest')}
+                  >
+                    <span className="theme-swatch theme-swatch-forest" aria-hidden />
+                    <span className="theme-label">Лес</span>
+                    <span className="theme-hint">мята</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`theme-option${uiTheme === 'ocean' ? ' active' : ''}`}
+                    aria-pressed={uiTheme === 'ocean'}
+                    onClick={() => persistUiTheme('ocean')}
+                  >
+                    <span className="theme-swatch theme-swatch-ocean" aria-hidden />
+                    <span className="theme-label">Океан</span>
+                    <span className="theme-hint">синий</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`theme-option${uiTheme === 'dusk' ? ' active' : ''}`}
+                    aria-pressed={uiTheme === 'dusk'}
+                    onClick={() => persistUiTheme('dusk')}
+                  >
+                    <span className="theme-swatch theme-swatch-dusk" aria-hidden />
+                    <span className="theme-label">Сумерки</span>
+                    <span className="theme-hint">фиолет</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`theme-option${uiTheme === 'ember' ? ' active' : ''}`}
+                    aria-pressed={uiTheme === 'ember'}
+                    onClick={() => persistUiTheme('ember')}
+                  >
+                    <span className="theme-swatch theme-swatch-ember" aria-hidden />
+                    <span className="theme-label">Угли</span>
+                    <span className="theme-hint">янтарь</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="setting-card">
+                <div className="setting-text">
+                  <div className="setting-name">Логи рядом с чатом</div>
+                  <div className="setting-desc">Отдельная панель справа от телефона (на узком экране — под чатом).</div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={showLogs}
+                  className={`switch${showLogs ? ' on' : ''}`}
+                  onClick={() => setLogsEnabled(!showLogs)}
+                >
+                  <span className="switch-knob" />
                 </button>
               </div>
-              <div className="logs-panel-body">
-                {logLines.length === 0 ? (
-                  <p className="logs-empty">Пока нет записей. Логи появятся здесь по мере работы сервера.</p>
-                ) : (
-                  logLines.map((line) => (
-                    <pre key={line.id} className={`log-line${line.text.toLowerCase().includes('llm') ? ' llm' : ''}`}>
-                      {line.text}
-                    </pre>
-                  ))
-                )}
-                <div ref={logsEndRef} />
+
+              <div className="setting-card">
+                <div className="setting-text">
+                  <div className="setting-name">Панель токенов</div>
+                  <div className="setting-desc">Сводка по LLM в шапке (prompt / completion / модель).</div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={showTokens}
+                  className={`switch${showTokens ? ' on' : ''}`}
+                  onClick={() => setTokensPanelEnabled(!showTokens)}
+                >
+                  <span className="switch-knob" />
+                </button>
               </div>
-            </aside>
-          ) : null}
-        </div>
-      ) : (
-        <div className="settings-page">
-          <h2 className="settings-title">Настройки</h2>
-          <p className="settings-lead">Параметры сохраняются в этом браузере.</p>
 
-          <div className="setting-card setting-card-stack">
-            <div className="setting-text">
-              <div className="setting-name">Цветовая гамма</div>
-              <div className="setting-desc">Акцентные цвета, фон и подсветка интерфейса пересчитываются под выбранную тему.</div>
-            </div>
-            <div className="theme-grid" role="group" aria-label="Цветовая гамма">
-              <button
-                type="button"
-                className={`theme-option${uiTheme === 'forest' ? ' active' : ''}`}
-                aria-pressed={uiTheme === 'forest'}
-                onClick={() => persistUiTheme('forest')}
-              >
-                <span className="theme-swatch theme-swatch-forest" aria-hidden />
-                <span className="theme-label">Лес</span>
-                <span className="theme-hint">мята</span>
-              </button>
-              <button
-                type="button"
-                className={`theme-option${uiTheme === 'ocean' ? ' active' : ''}`}
-                aria-pressed={uiTheme === 'ocean'}
-                onClick={() => persistUiTheme('ocean')}
-              >
-                <span className="theme-swatch theme-swatch-ocean" aria-hidden />
-                <span className="theme-label">Океан</span>
-                <span className="theme-hint">синий</span>
-              </button>
-              <button
-                type="button"
-                className={`theme-option${uiTheme === 'dusk' ? ' active' : ''}`}
-                aria-pressed={uiTheme === 'dusk'}
-                onClick={() => persistUiTheme('dusk')}
-              >
-                <span className="theme-swatch theme-swatch-dusk" aria-hidden />
-                <span className="theme-label">Сумерки</span>
-                <span className="theme-hint">фиолет</span>
-              </button>
-              <button
-                type="button"
-                className={`theme-option${uiTheme === 'ember' ? ' active' : ''}`}
-                aria-pressed={uiTheme === 'ember'}
-                onClick={() => persistUiTheme('ember')}
-              >
-                <span className="theme-swatch theme-swatch-ember" aria-hidden />
-                <span className="theme-label">Угли</span>
-                <span className="theme-hint">янтарь</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="setting-card">
-            <div className="setting-text">
-              <div className="setting-name">Логи рядом с чатом</div>
-              <div className="setting-desc">Отдельная панель справа от телефона (на узком экране — под чатом).</div>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={showLogs}
-              className={`switch${showLogs ? ' on' : ''}`}
-              onClick={() => setLogsEnabled(!showLogs)}
-            >
-              <span className="switch-knob" />
-            </button>
-          </div>
-
-          <div className="setting-card">
-            <div className="setting-text">
-              <div className="setting-name">Панель токенов</div>
-              <div className="setting-desc">Сводка по LLM в шапке (prompt / completion / модель).</div>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={showTokens}
-              className={`switch${showTokens ? ' on' : ''}`}
-              onClick={() => setTokensPanelEnabled(!showTokens)}
-            >
-              <span className="switch-knob" />
-            </button>
-          </div>
-
-          <div className="setting-card setting-card-stack">
-            <div className="setting-text">
-              <div className="setting-name">Вид чата</div>
-              <div className="setting-desc">
-                Телефон — компактное окно как на мобильном. ПК — широкая панель диалога на весь доступный размер.
+              <div className="setting-card setting-card-stack">
+                <div className="setting-text">
+                  <div className="setting-name">Вид чата</div>
+                  <div className="setting-desc">
+                    Телефон — компактное окно как на мобильном. ПК — широкая панель диалога на весь доступный размер.
+                  </div>
+                </div>
+                <div className="segmented segmented-wide" role="group" aria-label="Вид чата">
+                  <button
+                    type="button"
+                    className={chatLayout === 'mobile' ? 'active' : ''}
+                    aria-pressed={chatLayout === 'mobile'}
+                    onClick={() => persistChatLayout('mobile')}
+                  >
+                    Телефон
+                  </button>
+                  <button
+                    type="button"
+                    className={chatLayout === 'desktop' ? 'active' : ''}
+                    aria-pressed={chatLayout === 'desktop'}
+                    onClick={() => persistChatLayout('desktop')}
+                  >
+                    ПК
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="segmented segmented-wide" role="group" aria-label="Вид чата">
-              <button
-                type="button"
-                className={chatLayout === 'mobile' ? 'active' : ''}
-                aria-pressed={chatLayout === 'mobile'}
-                onClick={() => persistChatLayout('mobile')}
-              >
-                Телефон
-              </button>
-              <button
-                type="button"
-                className={chatLayout === 'desktop' ? 'active' : ''}
-                aria-pressed={chatLayout === 'desktop'}
-                onClick={() => persistChatLayout('desktop')}
-              >
-                ПК
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </section>
+          )}
+        </main>
+      </div>
     </div>
   )
 }
